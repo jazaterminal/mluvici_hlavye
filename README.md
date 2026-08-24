@@ -1,6 +1,6 @@
 # Mluvící hlavy
 
-GitHub Pages soundboard.
+Statický soundboard pro GitHub Pages.
 
 Všechny soubory jsou přímo v kořeni repozitáře:
 - `index.html`
@@ -8,8 +8,10 @@ Všechny soubory jsou přímo v kořeni repozitáře:
 - `app.js`
 - `sounds.js`
 - `hlavy.jpeg`
-- všechny `.mp3`
+- všech 72 souborů `.mp3`
 
 Žádná složka `audio/` se nepoužívá.
 
-GitHub Pages: `main` → `/ (root)`.
+GitHub Pages:
+- branch: `main`
+- folder: `/ (root)`
