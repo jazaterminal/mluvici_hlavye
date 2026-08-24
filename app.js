@@ -13,6 +13,9 @@
     currentTile = null;
   };
 
+  const fileUrl = (filename) =>
+    filename.split('/').map(encodeURIComponent).join('/');
+
   SOUND_FILES.forEach((sound, index) => {
     const tile = document.createElement('button');
     tile.type = 'button';
@@ -58,7 +61,8 @@
       stopCurrent();
       tile.classList.remove('has-error');
 
-      const audio = new Audio(`audio/${encodeURIComponent(sound.file).replace(/%2F/g, '/')}`);
+      // MP3 files are stored directly next to index.html.
+      const audio = new Audio(fileUrl(sound.file));
       audio.preload = 'auto';
       currentAudio = audio;
       currentTile = tile;
