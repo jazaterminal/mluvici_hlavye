@@ -16,7 +16,6 @@ const SOUND_FILES = [
   { file: "caus.mp3", title: "čaus" },
   { file: "avysledek.mp3", title: "A výsledek" },
   { file: "tenorinezpivejtetotakpriteplene.mp3", title: "tenoři, nezpívejte to tak přitepleně" },
-  { file: "nozdar.mp3", title: "No zdar" },
   { file: "cojefurt.mp3", title: "Co je furt" },
   { file: "prosimtetobudezadarmo.mp3", title: "Prosím tě, to bude zadarmo" },
   { file: "naschle.mp3", title: "Naschle" },
