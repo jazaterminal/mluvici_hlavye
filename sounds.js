@@ -69,5 +69,19 @@ const SOUND_FILES = [
   { file: "nikamnejdu.mp3", title: "Nikam nejdu" },
   { file: "baha.mp3", title: "Baha" },
   { file: "tojehovez.mp3", title: "To je hověz" },
-  { file: "tysifaktloupak.mp3", title: "Ty jsi fakt loupák" }
-];
+  { file: "tysifaktloupak.mp3", title: "Ty jsi fakt loupák" }{ file: "atvojeruce.mp3", title: "A tvoje ruce" },
+  { file: "atvojeruce.mp3", title: "A tvoje ruce" },
+  { file: "jajsemtakovejstavovej.mp3", title: "Já jsem takovej šťávovej" },
+{ file: "bohulibacinnost.mp3", title: "Bohulibá činnost" },
+{ file: "akdenaprikladnonagulach.mp3", title: "A kde například?" },
+{ file: "procmurikaszvonku.mp3", title: "Proč mu říkáš zvonku" },
+{ file: "tyvoletobudedlouhy.mp3", title: "Ty vole, to bude dlouhý" },
+{ file: "nasvujvek.mp3", title: "Na svůj věk" },
+{ file: "dejtemiprosimvas.mp3", title: "Dejte mi prosím vás" },
+{ file: "tomamradtadytusotolinu.mp3", title: "To mám rád, tady tu šotolinu" },
+{ file: "tojezasluzne.mp3", title: "To je záslužné" },
+{ file: "silence.mp3", title: "Sílenče" },
+{ file: "zajimave.mp3", title: "Zajímavé" },
+{ file: "podnasklo.mp3", title: "Poď na sklo" },
+{ file: "uzsestikratmatenistytelefon.mp3", title: "Už šestikrát mal ten istý telefón" },
+{ file: "amelhul.mp3", title: "A měl hůl?" }
