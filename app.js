@@ -1,34 +1,137 @@
 (() => {
-  const board = document.getElementById("soundboard");
-  if (!board || typeof SOUND_FILES === "undefined" || !Array.isArray(SOUND_FILES)) return;
+  const board = document.getElementById('soundboard');
+
+  if (!board || typeof SOUND_FILES === 'undefined' || !Array.isArray(SOUND_FILES)) {
+    return;
+  }
+
   let currentAudio = null;
   let currentTile = null;
-  function stopCurrent() {
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
-    if (currentTile) currentTile.classList.remove("is-playing");
-    currentAudio = null; currentTile = null;
-  }
-  function fileUrl(filename) { return "./" + filename.split("/").map(encodeURIComponent).join("/"); }
+
+  const stopCurrent = () => {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+    if (currentTile) {
+      currentTile.classList.remove('is-playing');
+      currentTile.setAttribute('aria-pressed', 'false');
+    }
+    currentAudio = null;
+    currentTile = null;
+  };
+
+  const fileUrl = (filename) =>
+    './' + filename.split('/').map(encodeURIComponent).join('/');
+
+  const slugFor = (sound) => {
+    const base = sound.file.replace(/\.[^.]+$/, '');
+    return base
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+
+  const tileBySlug = new Map();
+
   SOUND_FILES.forEach((sound, index) => {
-    const tile = document.createElement("button"); tile.type="button"; tile.className="tile";
-    tile.setAttribute("aria-label", `Přehrát: ${sound.title}`);
-    const top=document.createElement("span"); top.className="tile-top";
-    const number=document.createElement("span"); number.className="tile-number"; number.textContent=String(index+1).padStart(2,"0");
-    const icon=document.createElement("span"); icon.className="play-icon"; icon.setAttribute("aria-hidden","true");
-    top.append(number,icon);
-    const iw=document.createElement("span"); iw.className="tile-image-wrap";
-    const img=document.createElement("img"); img.className="tile-image"; img.src="./hlavy.jpeg"; img.alt=""; img.loading=index<8?"eager":"lazy"; iw.appendChild(img);
-    const title=document.createElement("span"); title.className="tile-title"; title.textContent=sound.title;
-    tile.append(top,iw,title);
-    tile.addEventListener("click", async () => {
-      if (currentTile===tile && currentAudio && !currentAudio.paused) { stopCurrent(); return; }
-      stopCurrent(); tile.classList.remove("has-error");
-      const audio=new Audio(fileUrl(sound.file)); audio.preload="auto"; currentAudio=audio; currentTile=tile;
-      audio.addEventListener("ended",stopCurrent,{once:true});
-      audio.addEventListener("error",()=>{ tile.classList.add("has-error"); if(currentTile===tile) stopCurrent(); console.warn("Nelze načíst:",sound.file); },{once:true});
-      try { await audio.play(); if(currentTile===tile) tile.classList.add("is-playing"); }
-      catch(err){ tile.classList.add("has-error"); if(currentTile===tile) stopCurrent(); console.warn("Přehrávání selhalo:",sound.file,err); }
-    });
+    const slug = slugFor(sound);
+
+    const tile = document.createElement('a');
+    tile.className = 'tile';
+    tile.href = `#${slug}`;
+    tile.dataset.slug = slug;
+    tile.setAttribute('role', 'button');
+    tile.setAttribute('aria-pressed', 'false');
+    tile.setAttribute('aria-label', `${index + 1}. ${sound.title}`);
+
+    const image = document.createElement('img');
+    image.className = 'tile-image';
+    image.src = './hlavy.jpeg';
+    image.alt = '';
+    image.loading = 'lazy';
+
+    const number = document.createElement('div');
+    number.className = 'tile-number';
+    number.textContent = String(index + 1).padStart(2, '0');
+
+    const title = document.createElement('div');
+    title.className = 'tile-title';
+    title.textContent = sound.title;
+
+    const play = document.createElement('div');
+    play.className = 'tile-play';
+    play.setAttribute('aria-hidden', 'true');
+    play.textContent = '▶';
+
+    tile.append(image, number, title, play);
     board.appendChild(tile);
+
+    const audio = new Audio(fileUrl(sound.file));
+    audio.preload = 'none';
+
+    const playThis = async ({ updateUrl = true } = {}) => {
+      if (currentAudio === audio && !audio.paused) {
+        stopCurrent();
+        return;
+      }
+
+      stopCurrent();
+
+      currentAudio = audio;
+      currentTile = tile;
+      tile.classList.add('is-playing');
+      tile.setAttribute('aria-pressed', 'true');
+
+      if (updateUrl) {
+        history.replaceState(null, '', `#${slug}`);
+      }
+
+      try {
+        await audio.play();
+      } catch (err) {
+        tile.classList.remove('is-playing');
+        tile.setAttribute('aria-pressed', 'false');
+        currentAudio = null;
+        currentTile = null;
+      }
+    };
+
+    tile.addEventListener('click', (event) => {
+      event.preventDefault();
+      playThis({ updateUrl: true });
+    });
+
+    audio.addEventListener('ended', () => {
+      if (currentAudio === audio) {
+        tile.classList.remove('is-playing');
+        tile.setAttribute('aria-pressed', 'false');
+        currentAudio = null;
+        currentTile = null;
+      }
+    });
+
+    tileBySlug.set(slug, { tile, playThis });
   });
+
+  const openFromHash = () => {
+    const slug = decodeURIComponent(location.hash.slice(1)).trim().toLowerCase();
+    if (!slug) return;
+
+    const item = tileBySlug.get(slug);
+    if (!item) return;
+
+    requestAnimationFrame(() => {
+      item.tile.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      item.playThis({ updateUrl: false });
+    });
+  };
+
+  window.addEventListener('hashchange', openFromHash);
+
+  if (location.hash) {
+    window.addEventListener('load', openFromHash, { once: true });
+  }
 })();
