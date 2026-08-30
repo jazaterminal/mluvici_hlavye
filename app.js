@@ -39,11 +39,13 @@
   SOUND_FILES.forEach((sound, index) => {
     const slug = slugFor(sound);
 
-    const tile = document.createElement('a');
+    // Zachováváme původní DIV strukturu karty,
+    // takže se nemění její vzhled ani názvy.
+    const tile = document.createElement('div');
     tile.className = 'tile';
-    tile.href = `#${slug}`;
     tile.dataset.slug = slug;
     tile.setAttribute('role', 'button');
+    tile.setAttribute('tabindex', '0');
     tile.setAttribute('aria-pressed', 'false');
     tile.setAttribute('aria-label', `${index + 1}. ${sound.title}`);
 
@@ -86,7 +88,7 @@
       tile.setAttribute('aria-pressed', 'true');
 
       if (updateUrl) {
-        history.replaceState(null, '', `#${slug}`);
+        history.replaceState(null, '', `${location.pathname}${location.search}#${slug}`);
       }
 
       try {
@@ -99,9 +101,15 @@
       }
     };
 
-    tile.addEventListener('click', (event) => {
-      event.preventDefault();
+    tile.addEventListener('click', () => {
       playThis({ updateUrl: true });
+    });
+
+    tile.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        playThis({ updateUrl: true });
+      }
     });
 
     audio.addEventListener('ended', () => {
